@@ -4,32 +4,39 @@ import { NavLink } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import logo from '../images/logo.png';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { updateContact, resetContact } from '../redux/slices/contactSlice';
+
 const Contact = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-    });
+    const dispatch = useDispatch();
+    const contact = useSelector((state) => state.contact);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    // const numberHandleChange = (e) => {
+    //     let value= e.target.value.match(/[^0-9]/);
+
+    //     // if (e.target.value.match(/[^0-9]/)) {
+    //     //     e.preventDefault();
+    //     // }
+
+    //     console.log(value);
+    // }
+
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+
+        dispatch(updateContact({ [e.target.name]: e.target.value }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        console.log("Message sent");
+        console.log("Message sent", contact);
+        dispatch(resetContact());
     };
 
     return (
-        <div className={`w-full h-full flex flex-col justify-center ${isMobile ? 'px-4' : 'lg:px-72'}`}>
+        <div className={`w-full flex flex-col justify-center ${isMobile ? 'px-4' : 'lg:px-72'}`}>
             <div className={`${isMobile ? 'w-full' : 'w-1/3'} mx-auto bg-white rounded-md`}>
                 <h2 className={`${isMobile ? 'text-xl' : 'text-2xl mt-16'} font-bold mb-6 text-center`}>Contact Us</h2>
                 <form onSubmit={handleSubmit}>
@@ -38,9 +45,12 @@ const Contact = () => {
                             fullWidth
                             label="Name"
                             name="name"
-                            value={formData.name}
+                            value={contact.name}
                             onChange={handleChange}
                             required
+                            inputProps={{
+                                maxLength: 10
+                            }}
                         />
                     </div>
                     <div className={`${isMobile ? 'mb-3' : 'mb-4'}`}>
@@ -49,7 +59,7 @@ const Contact = () => {
                             label="Email"
                             name="email"
                             type="email"
-                            value={formData.email}
+                            value={contact.email}
                             onChange={handleChange}
                             required
                         />
@@ -57,11 +67,15 @@ const Contact = () => {
                     <div className={`${isMobile ? 'mb-3' : 'mb-4'}`}>
                         <TextField
                             fullWidth
+                            type='number'
                             label="Phone"
                             name="phone"
-                            value={formData.phone}
+                            value={contact.phone}
                             onChange={handleChange}
                             required
+                            inputProps={{
+                                maxLength: 10,
+                            }}
                         />
                     </div>
                     <div className={`${isMobile ? 'mb-3' : 'mb-4'}`}>
@@ -69,11 +83,15 @@ const Contact = () => {
                             fullWidth
                             label="Message"
                             name="message"
-                            value={formData.message}
+                            value={contact.message}
                             onChange={handleChange}
                             multiline
                             rows={4}
                             required
+                            inputProps={{
+                                maxLength: 500,
+                                minLength: 10
+                            }}
                         />
                     </div>
                     <Button
@@ -94,9 +112,10 @@ const Contact = () => {
                 </form>
             </div>
 
+
             {/* address and timing */}
             <div className={`${isMobile ? 'mt-8' : 'mt-16'}`}>
-                <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} uppercase`}>Address and Timing</h1>
+                <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} uppercase text-center`}>Address and Timing</h1>
                 {!isMobile && (
                     <div className="w-1/2 mx-auto text-center mt-5">
                         <h1 className="uppercase mb-6 text-xl">FOODER is Available</h1>
@@ -121,7 +140,7 @@ const Contact = () => {
 
             {/* social */}
             <div className={`${isMobile ? 'mt-8 mb-3' : 'mt-8 mb-16'}`}>
-                <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} uppercase`}>Social</h1>
+                <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} uppercase text-center`}>Social</h1>
                 <div className={`flex items-center justify-center gap-12 ${isMobile ? "mt-3" : "mt-10   "}`}>
                     <NavLink to="https://instagram.com" target="_blank" rel="noopener noreferrer">
                         <svg xmlns="http://www.w3.org/2000/svg" width={isMobile ? "24" : "32"} height={isMobile ? "24" : "32"} viewBox="0 0 24 24" fill="none" stroke="" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="feather feather-instagram">

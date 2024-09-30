@@ -8,6 +8,9 @@ import Menu from './components/Menu.jsx';
 import Contact from './components/Contact.jsx';
 import App from './App.jsx';
 
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -23,15 +26,15 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/menu",
+        path: "menu",
         element: <Menu />,
       },
       {
-        path: "/reservation",
+        path: "reservation",
         element: <Reservation />,
       },
       {
-        path: "/contact",
+        path: "contact",
         element: <Contact />,
       },
     ],
@@ -40,6 +43,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>,
 )

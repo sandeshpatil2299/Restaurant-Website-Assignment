@@ -5,19 +5,30 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { useTheme } from '@mui/material/styles';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { updateReservation, resetReservation } from '../redux/slices/reservationSlice';
+import { current } from '@reduxjs/toolkit';
+import dayjs from 'dayjs';
+
 const Reservation = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [people, setPeople] = useState(1);
-    const [dateTime, setDateTime] = useState(null);
+    const dispatch = useDispatch();
+    const reservation = useSelector((state) => state.reservation);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    const handleChange = (e) => {
+        dispatch(updateReservation({ [e.target.name]: e.target.value }));
+    };
+
+    const handleDateTimeChange = (newValue) => {
+        dispatch(updateReservation({ dateTime: newValue }));
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Reservation submitted");
+        console.log("Reservation submitted", reservation);
+        dispatch(resetReservation());
     };
 
     return (
@@ -29,8 +40,9 @@ const Reservation = () => {
                         <TextField
                             fullWidth
                             label="Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            name="name"
+                            value={reservation.name}
+                            onChange={handleChange}
                             required
                         />
                     </div>
@@ -38,9 +50,10 @@ const Reservation = () => {
                         <TextField
                             fullWidth
                             label="Email"
+                            name="email"
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={reservation.email}
+                            onChange={handleChange}
                             required
                         />
                     </div>
@@ -48,8 +61,9 @@ const Reservation = () => {
                         <TextField
                             fullWidth
                             label="Phone"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            name="phone"
+                            value={reservation.phone}
+                            onChange={handleChange}
                             required
                         />
                     </div>
@@ -58,8 +72,9 @@ const Reservation = () => {
                             fullWidth
                             select
                             label="Number of People"
-                            value={people}
-                            onChange={(e) => setPeople(e.target.value)}
+                            name="people"
+                            value={reservation.people}
+                            onChange={handleChange}
                             required
                         >
                             {[1, 2, 3, 4, 5, 6, 7, 8].map((option) => (
@@ -69,19 +84,28 @@ const Reservation = () => {
                             ))}
                         </TextField>
                     </div>
-                    <div className={`${isMobile ? 'mb-3' : 'mb-4'}`}>
+                    <div className={`${isMobile ? 'mb-3' : 'mb-4'} w-full text-center`}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DateTimePicker
-                                label="Reservation Date and Time"
-                                value={dateTime}
-                                onChange={(newValue) => setDateTime(newValue)}
-                                renderInput={(params) => <TextField {...params} fullWidth required />}
+                                label="Date and Time"
+                                value={reservation.dateTime}
+                                onChange={handleDateTimeChange}
+                                fullWidth
+                                minDate={dayjs().startOf('day')}
+                                maxDate={dayjs().add(2, 'day').endOf('day')}
+                                renderInput={(params) => <TextField {...params} required fullWidth />}
+                                shouldDisableDate={(date) => {
+                                    const today = dayjs().startOf('day');
+                                    const twoDaysFromNow = today.add(2, 'day').endOf('day');
+                                    return !date.isBetween(today, twoDaysFromNow, null, '[]');
+                                }}
                             />
                         </LocalizationProvider>
                     </div>
-                    <Button 
-                        type="submit" 
-                        variant="contained" 
+
+                    <Button
+                        type="submit"
+                        variant="contained"
                         fullWidth
                         sx={{
                             backgroundColor: '#dfd3c3',
