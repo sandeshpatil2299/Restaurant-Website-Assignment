@@ -11,14 +11,16 @@ import App from './App.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <App/>
-    ),
+    element: <App />,
     children: [
       {
-        path: "/home",
+        path: "",
         element: <Home />,
         index: true
+      },
+      {
+        path: "home",
+        element: <Home />,
       },
       {
         path: "/menu",
